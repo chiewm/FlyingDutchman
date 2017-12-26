@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Data.Entity;
 using System.Linq;
@@ -10,6 +11,7 @@ namespace FlyingDutchman.Models
 {
     public class User
     {
+        
         public int Id { get; set; }
         public string Ip { get; set; }
         public string Operation { get; set; }
@@ -19,11 +21,6 @@ namespace FlyingDutchman.Models
         
         public DateTime? CreatedOn { get; set; }
     }
-    public class UserDBContext : DbContext
-    {
-        public UserDBContext() : base("DefaultConnection") { }
-        public DbSet<User> Users { get; set; }
-    }
-
+ 
 
 }

@@ -249,7 +249,7 @@ body .container.body .right_col {
   width: 6px;
 }
 .left_col .mCSB_dragger {
-  max-height: 400px !important;
+  max-height: 400   px !important;
 }
 /**  ------------------------------------------  **/
 
@@ -895,7 +895,7 @@ legend {
   padding-bottom: 7px;
 }
 .demo-placeholder {
-  height: 280px;
+  height: 350px;
 }
 
 /** Contacts **/
@@ -1550,8 +1550,8 @@ span.right {
 
 /** top tiles  */
 .tile_count {
-  margin-bottom: 20px;
-  margin-top: 20px;
+  margin-bottom: 0px;
+  margin-top: 80px;
 }
 .tile_count .tile_stats_count {
   border-bottom: 1px solid #D9DEE4;
@@ -4338,3 +4338,8 @@ ul.notifications {
   border: 1px solid #e5e5e5;
 }
 /** /Dropzone.js **/
+
+
+body .count :hover{
+    color:#1ABB9C;
+}

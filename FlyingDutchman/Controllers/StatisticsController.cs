@@ -10,55 +10,59 @@ using FlyingDutchman.Models;
 
 namespace FlyingDutchman.Controllers
 {
-    public class HomeController : Controller
+    public class StatisticsController : Controller
     {
         private MyShopDbContext db = new MyShopDbContext();
 
-        // GET: Home
+        // GET: Statistics
         public ActionResult Index()
         {
-            return View(db.Users.ToList());
+            return View(db.Statistics.ToList());
         }
 
-        // GET: Home/Details/5
+        // GET: Statistics/Details/5
         public ActionResult Details(int? id)
         {
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            User user = db.Users.Find(id);
-            if (user == null)
+            Statistic statistic = db.Statistics.Find(id);
+            if (statistic == null)
             {
                 return HttpNotFound();
             }
-            return View(user);
+            return View(statistic);
         }
 
-        // GET: Home/Create
+        // GET: Statistics/Create
         public ActionResult Create()
         {
             return View();
         }
 
-        // POST: Home/Create
+        // POST: Statistics/Create
         // 为了防止“过多发布”攻击，请启用要绑定到的特定属性，有关 
         // 详细信息，请参阅 http://go.microsoft.com/fwlink/?LinkId=317598。
         [HttpPost]
-        //[ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "Id,Ip,Operation,Good,CreatedOn")] User user)
+
+        public ActionResult Create([Bind(Include = "Id,Date,DAU,BuyNum,AddNum,CollectNum,TotalNum,TotalGood")] Statistic statistic)
         {
             if (ModelState.IsValid)
             {
-                db.Users.Add(user);
+                db.Statistics.Add(statistic);
                 db.SaveChanges();
                 return RedirectToAction("Index");
             }
 
-            return View(user);
+            return View(statistic);
         }
 
-  
 
+
+        // POST: Statistics/Edit/5
+        // 为了防止“过多发布”攻击，请启用要绑定到的特定属性，有关 
+        // 详细信息，请参阅 http://go.microsoft.com/fwlink/?LinkId=317598。
+      
     }
 }

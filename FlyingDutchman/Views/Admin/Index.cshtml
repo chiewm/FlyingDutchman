@@ -1,4 +1,7 @@
-﻿
+﻿@using System.Collections
+@using Highsoft.Web.Mvc.Charts
+
+
 @{
     ViewBag.Title = "Index";
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
@@ -8,11 +11,20 @@
 <!-- page content -->
 <div class="right_col" role="main" style="height: 970px;">
     <!-- top tiles -->
-    <div class="row tile_count" style="margin-top: 80px">
+    <div class="row tile_count">
         <div class="col-md-2 col-sm-4 col-xs-6 tile_stats_count">
             <span class="count_top"><i class="fa fa-user"></i> 活跃用户数</span>
-            <div class="count">2500</div>
-            <span class="count_bottom"><i class="green"><i class="fa fa-sort-asc"></i>4% </i> 与昨日相比</span>
+            <div class="count">@ViewBag.DAU</div>
+
+            @if (ViewBag.DAURate>=0)
+            { 
+                <span class="count_bottom"><i class="green"><i class="fa fa-sort-asc"></i>@ViewBag.DAURate% </i> 与昨日相比</span>
+            }
+            else
+            {
+                <span class="count_bottom"><i class="red"><i class="fa fa-sort-desc"></i>@ViewBag.DAURate% </i> 与昨日相比</span>
+            }
+           
         </div>
         <div class="col-md-2 col-sm-4 col-xs-6 tile_stats_count">
             <span class="count_top"><i class="fa fa-user"></i> 付款人数</span>
@@ -21,7 +33,7 @@
         </div>
         <div class="col-md-2 col-sm-4 col-xs-6 tile_stats_count">
             <span class="count_top"><i class="fa fa-user"></i> 加入购物车人数</span>
-            <div class="count green">2,500</div>
+            <div class="count">2,500</div>
             <span class="count_bottom"><i class="green"><i class="fa fa-sort-asc"></i>34% </i> 与昨日相比</span>
         </div>
         <div class="col-md-2 col-sm-4 col-xs-6 tile_stats_count">
@@ -53,7 +65,124 @@
                 </div>
 
                 <div class="col-md-12 col-sm-12 col-xs-12">
-                    <div id="chart_plot_01" class="demo-placeholder"></div>
+                    <div id="chart0" class="demo-placeholder">
+                    
+
+                        <script type="text/javascript">
+
+                            function initChart() {
+
+                                var data = generateInitialData();
+
+                                // set up the updating of the chart each second
+                                var series = this.series[0];
+
+                                series.setData(data);
+
+                                setInterval(function () {
+                                    var x = (new Date()).getTime(), // current time
+                                        y = Math.random();
+                                    series.addPoint([x, y], true, true);
+                                }, 1000);
+                            }
+
+                            function formatTooltip() {
+                                return '<b>' + this.series.name + '</b><br/>' +
+                                                Highcharts.dateFormat('%Y-%m-%d %H:%M:%S', this.x) + '<br/>' +
+                                                Highcharts.numberFormat(this.y, 2);
+                            }
+
+                            function generateInitialData() {
+
+                                    // generate an array of random data
+                                    var data = [],
+                                        time = (new Date()).getTime(),
+                                        i;
+
+                                    for (i = -19; i <= 0; i += 1) {
+                                        data.push({
+                                            x: time + i * 1000,
+                                            y: Math.random()
+                                        });
+                                    }
+                                    return data;
+
+                            }
+
+                       </script>
+
+
+                        @(Html.Highsoft().Highcharts(
+                            new Highcharts
+                            {
+                                Chart = new Highsoft.Web.Mvc.Charts.Chart
+                                {
+                                    Type = ChartType.Spline,
+                                    Animation = new Animation
+                                    {
+                                        Enabled = true
+                                    },
+                                    MarginRight = 10,
+                                    Events = new ChartEvents
+                                    {
+                                        Load = "initChart"
+                                    }
+                                },
+                                Title = new Title
+                                {
+                                    Text = null
+                                },
+                                XAxis = new List<XAxis>
+                                {
+                                    new XAxis
+                                    {
+                                        Type = XAxisType.Datetime,
+                                        TickPixelInterval = 150
+                                    }
+                                },
+                                YAxis = new List<YAxis>
+                                {
+                                    new YAxis
+                                    {
+                                        Title = new YAxisTitle
+                                        {
+                                            Text = "Value"
+                                        },
+                                        PlotLines =  new List<YAxisPlotLines>
+                                        {
+                                            new YAxisPlotLines
+                                            {
+                                                Value = 0,
+                                                Width = 1,
+                                                Color = "#808080"
+                                            }
+                                        }
+                                    }
+                                },
+                                Tooltip = new Tooltip
+                                {
+                                    Formatter = "formatTooltip"
+                                },
+                                Legend = new Legend
+                                {
+                                    Enabled = false
+                                },
+                                Exporting = new Exporting
+                                {
+                                    Enabled = false
+                                },
+                                Series = new List<Series>
+                                {
+                                    new SplineSeries
+                                    {
+                                        Name = "Random Data"
+                                    }
+                                }
+                            }
+                            , "chart0")
+                                            )
+
+                    </div>
                 </div>
 
 
@@ -68,7 +197,7 @@
         <div class="col-md-4 col-sm-4 col-xs-12">
             <div class="x_panel tile fixed_height_320">
                 <div class="x_title">
-                    <h2>浏览器 <small>User-Agent</small></h2>
+                    <h2>热门商品 <small>Hot Sale</small></h2>
                     <ul class="nav navbar-right panel_toolbox">
                         <li>
                             <a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
@@ -90,91 +219,71 @@
                     </ul>
                     <div class="clearfix"></div>
                 </div>
-                <div class="x_content">
-                    <h4>App Usage across versions</h4>
-                    <div class="widget_summary">
-                        <div class="w_left w_25">
-                            <span>0.1.5.2</span>
-                        </div>
-                        <div class="w_center w_55">
-                            <div class="progress">
-                                <div class="progress-bar bg-green" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 66%;">
-                                    <span class="sr-only">60% Complete</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="w_right w_20">
-                            <span>123k</span>
-                        </div>
-                        <div class="clearfix"></div>
-                    </div>
+                @*<div class="x_content">*@ 
+                    <div id="chart1" style="min-width:400px; height: 280px;">
+                        @(Html.Highsoft().Highcharts(
+                        new Highcharts
+                        {
+                            Title = new Title
+                            {
+                                Text = null
+                            },
 
-                    <div class="widget_summary">
-                        <div class="w_left w_25">
-                            <span>0.1.5.3</span>
-                        </div>
-                        <div class="w_center w_55">
-                            <div class="progress">
-                                <div class="progress-bar bg-green" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 45%;">
-                                    <span class="sr-only">60% Complete</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="w_right w_20">
-                            <span>53k</span>
-                        </div>
-                        <div class="clearfix"></div>
-                    </div>
-                    <div class="widget_summary">
-                        <div class="w_left w_25">
-                            <span>0.1.5.4</span>
-                        </div>
-                        <div class="w_center w_55">
-                            <div class="progress">
-                                <div class="progress-bar bg-green" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 25%;">
-                                    <span class="sr-only">60% Complete</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="w_right w_20">
-                            <span>23k</span>
-                        </div>
-                        <div class="clearfix"></div>
-                    </div>
-                    <div class="widget_summary">
-                        <div class="w_left w_25">
-                            <span>0.1.5.5</span>
-                        </div>
-                        <div class="w_center w_55">
-                            <div class="progress">
-                                <div class="progress-bar bg-green" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 5%;">
-                                    <span class="sr-only">60% Complete</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="w_right w_20">
-                            <span>3k</span>
-                        </div>
-                        <div class="clearfix"></div>
-                    </div>
-                    <div class="widget_summary">
-                        <div class="w_left w_25">
-                            <span>0.1.5.6</span>
-                        </div>
-                        <div class="w_center w_55">
-                            <div class="progress">
-                                <div class="progress-bar bg-green" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 2%;">
-                                    <span class="sr-only">60% Complete</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="w_right w_20">
-                            <span>1k</span>
-                        </div>
-                        <div class="clearfix"></div>
-                    </div>
+                            XAxis = new List<XAxis>
+                            {
+                                new XAxis
+                                {
+                                    Type = XAxisType.Category,
+                                    Labels = new XAxisLabels
+                                    {
+                                        Rotation = -45,
+                                        Style = new XAxisLabelsStyle()
+                                        {
+                                            FontSize = "8px"
+                                        }
+                                    }
+                                }
+                            },
+                            YAxis = new List<YAxis>
+                            {
+                                new YAxis
+                                {
+                                    Min = 0,
+                                    Title = new YAxisTitle
+                                    {
+                                        Text = "热度 (次)"
+                                    }
+                                }
+                            },
+                            Colors = new List<string>()
+                            {
+                                "#1abb9c",
+                            },
+                            Legend = new Legend
+                            {
+                                Enabled = false
+                            },
+                            Tooltip = new Tooltip
+                            {
+                                PointFormat = "今日热度: <b>{point.y} 次</b>"
+                            },
+                            Series = new List<Series>
+                            {
+                                new ColumnSeries
+                                {
+                                    Name = "HotSale",
+                                    Data = @ViewData["Hotsale"] as List<ColumnSeriesData>
+                                }
+                            }
+                        }
+                        , "chart1")
+                                        )
+                        
+                                    </div>
+ 
+                @*</div>*@
+              
 
-                </div>
             </div>
         </div>
 
@@ -327,3 +436,5 @@
     </div>
 </div>
 
+<script src="http://code.highcharts.com/highcharts.js"></script>
+<script src="https://code.highcharts.com/modules/exporting.js"></script>
