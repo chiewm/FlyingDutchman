@@ -16,40 +16,85 @@
             <span class="count_top"><i class="fa fa-user"></i> 活跃用户数</span>
             <div class="count">@ViewBag.DAU</div>
 
-            @if (ViewBag.DAURate>=0)
-            { 
+            @if (ViewBag.DAURate >= 0)
+            {
                 <span class="count_bottom"><i class="green"><i class="fa fa-sort-asc"></i>@ViewBag.DAURate% </i> 与昨日相比</span>
             }
             else
             {
                 <span class="count_bottom"><i class="red"><i class="fa fa-sort-desc"></i>@ViewBag.DAURate% </i> 与昨日相比</span>
             }
-           
+
         </div>
         <div class="col-md-2 col-sm-4 col-xs-6 tile_stats_count">
             <span class="count_top"><i class="fa fa-user"></i> 付款人数</span>
-            <div class="count">123.50</div>
-            <span class="count_bottom"><i class="green"><i class="fa fa-sort-asc"></i>3% </i> 与昨日相比</span>
+            <div class="count">@ViewBag.BuyNum</div>
+
+            @if (ViewBag.BuyRate >= 0)
+            {
+                <span class="count_bottom"><i class="green"><i class="fa fa-sort-asc"></i>@ViewBag.BuyRate% </i> 与昨日相比</span>
+            }
+            else
+            {
+                <span class="count_bottom"><i class="red"><i class="fa fa-sort-desc"></i>@ViewBag.BuyRate% </i> 与昨日相比</span>
+            }
+
         </div>
         <div class="col-md-2 col-sm-4 col-xs-6 tile_stats_count">
             <span class="count_top"><i class="fa fa-user"></i> 加入购物车人数</span>
-            <div class="count">2,500</div>
-            <span class="count_bottom"><i class="green"><i class="fa fa-sort-asc"></i>34% </i> 与昨日相比</span>
+            <div class="count">@ViewBag.AddNum</div>
+
+            @if (ViewBag.AddRate >= 0)
+            {
+                <span class="count_bottom"><i class="green"><i class="fa fa-sort-asc"></i>@ViewBag.AddRate% </i> 与昨日相比</span>
+            }
+            else
+            {
+                <span class="count_bottom"><i class="red"><i class="fa fa-sort-desc"></i>@ViewBag.AddRate% </i> 与昨日相比</span>
+            }
+
         </div>
         <div class="col-md-2 col-sm-4 col-xs-6 tile_stats_count">
             <span class="count_top"><i class="fa fa-user"></i> 收藏人数</span>
-            <div class="count">4,567</div>
-            <span class="count_bottom"><i class="red"><i class="fa fa-sort-desc"></i>12% </i> 与昨日相比</span>
+            <div class="count">@ViewBag.CollectNum</div>
+
+            @if (ViewBag.CollectRate >= 0)
+            {
+                <span class="count_bottom"><i class="green"><i class="fa fa-sort-asc"></i>@ViewBag.CollectRate% </i> 与昨日相比</span>
+            }
+            else
+            {
+                <span class="count_bottom"><i class="red"><i class="fa fa-sort-desc"></i>@ViewBag.CollectRate% </i> 与昨日相比</span>
+            }
+
         </div>
         <div class="col-md-2 col-sm-4 col-xs-6 tile_stats_count">
-            <span class="count_top"><i class="fa fa-user"></i> 总操作数</span>
-            <div class="count">2,315</div>
-            <span class="count_bottom"><i class="green"><i class="fa fa-sort-asc"></i>34% </i> 与昨日相比</span>
+            <span class="count_top"><i class="fa fa-user"></i> 搜索人数</span>
+            <div class="count">@ViewBag.SearchNum</div>
+
+            @if (ViewBag.SearchRate >= 0)
+            {
+                <span class="count_bottom"><i class="green"><i class="fa fa-sort-asc"></i>@ViewBag.SearchRate% </i> 与昨日相比</span>
+            }
+            else
+            {
+                <span class="count_bottom"><i class="red"><i class="fa fa-sort-desc"></i>@ViewBag.SearchRate% </i> 与昨日相比</span>
+            }
+
         </div>
         <div class="col-md-2 col-sm-4 col-xs-6 tile_stats_count">
-            <span class="count_top"><i class="fa fa-user"></i> Total Connections</span>
-            <div class="count">7,325</div>
-            <span class="count_bottom"><i class="green"><i class="fa fa-sort-asc"></i>34% </i> From last Week</span>
+            <span class="count_top"><i class="fa fa-user"></i> 操作总数</span>
+            <div class="count">@ViewBag.TotalNum</div>
+
+            @if (ViewBag.TotalRate >= 0)
+            {
+                <span class="count_bottom"><i class="green"><i class="fa fa-sort-asc"></i>@ViewBag.TotalRate% </i> 与昨日相比</span>
+            }
+            else
+            {
+                <span class="count_bottom"><i class="red"><i class="fa fa-sort-desc"></i>@ViewBag.TotalRate% </i> 与昨日相比</span>
+            }
+
         </div>
     </div>
     <!-- /top tiles -->
@@ -66,8 +111,6 @@
 
                 <div class="col-md-12 col-sm-12 col-xs-12">
                     <div id="chart0" class="demo-placeholder">
-                    
-
                         <script type="text/javascript">
 
                             function initChart() {
@@ -93,24 +136,19 @@
                             }
 
                             function generateInitialData() {
+                                var data = [],
+                                    time = (new Date()).getTime(),
+                                    i;
 
-                                    // generate an array of random data
-                                    var data = [],
-                                        time = (new Date()).getTime(),
-                                        i;
-
-                                    for (i = -19; i <= 0; i += 1) {
-                                        data.push({
-                                            x: time + i * 1000,
-                                            y: Math.random()
-                                        });
-                                    }
-                                    return data;
-
+                                for (i = -19; i <= 0; i += 1) {
+                                    data.push({
+                                        x: time + i * 1000,
+                                        y: Math.random()
+                                    });
+                                }
+                                return data;
                             }
-
-                       </script>
-
+                        </script>
 
                         @(Html.Highsoft().Highcharts(
                             new Highcharts
@@ -180,12 +218,10 @@
                                 }
                             }
                             , "chart0")
-                                            )
+                        )
 
                     </div>
                 </div>
-
-
                 <div class="clearfix"></div>
             </div>
         </div>
@@ -194,8 +230,43 @@
     <br />
 
     <div class="row">
+        
         <div class="col-md-4 col-sm-4 col-xs-12">
-            <div class="x_panel tile fixed_height_320">
+            <div class="x_panel tile fixed_height_320 overflow_hidden">
+                <div class="x_title">
+                    <h2>用户分布 <small>Distribution</small></h2>
+                    <ul class="nav navbar-right panel_toolbox">
+                        <li>
+                            <a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+                        </li>
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><i class="fa fa-wrench"></i></a>
+                            <ul class="dropdown-menu" role="menu">
+                                <li>
+                                    <a href="#">Settings 1</a>
+                                </li>
+                                <li>
+                                    <a href="#">Settings 2</a>
+                                </li>
+                            </ul>
+                        </li>
+                        <li>
+                            <a class="close-link"><i class="fa fa-close"></i></a>
+                        </li>
+                    </ul>
+                    <div class="clearfix"></div>
+                </div>
+
+
+                <div id="chart1" style="min-width:400px; height: 270px;">
+                  
+                </div>
+
+            </div>
+        </div>
+
+        <div class="col-md-4 col-sm-4 col-xs-12">
+            <div class="x_panel tile fixed_height_320 overflow_hidden">
                 <div class="x_title">
                     <h2>热门商品 <small>Hot Sale</small></h2>
                     <ul class="nav navbar-right panel_toolbox">
@@ -219,70 +290,117 @@
                     </ul>
                     <div class="clearfix"></div>
                 </div>
-                @*<div class="x_content">*@ 
-                    <div id="chart1" style="min-width:400px; height: 280px;">
-                        @(Html.Highsoft().Highcharts(
-                        new Highcharts
-                        {
-                            Title = new Title
-                            {
-                                Text = null
-                            },
 
-                            XAxis = new List<XAxis>
+                <div id="chart2" style="min-width:400px; height: 270px;">
+                    @(Html.Highsoft().Highcharts(
+                    new Highcharts
+                    {
+                        Credits = new Credits
+                        {
+                            Enabled=false
+                        },
+                        Title = new Title
+                        {
+                            Text = null
+                        },
+                        Colors = new List<string>()
+                        {
+                           "#3498DB","#1abb9c","#9B59B6","#E74C3C","#34495E"
+                        },
+                        XAxis = new List<XAxis>
+                        {
+                            new XAxis
                             {
-                                new XAxis
-                                {
-                                    Type = XAxisType.Category,
-                                    Labels = new XAxisLabels
+                                Type = XAxisType.Category,
+                                Labels = new XAxisLabels
                                     {
-                                        Rotation = -45,
+
                                         Style = new XAxisLabelsStyle()
                                         {
-                                            FontSize = "8px"
+                                            FontSize = "10px",
                                         }
                                     }
-                                }
-                            },
-                            YAxis = new List<YAxis>
+                            }
+                        },
+                        YAxis = new List<YAxis>
+                        {
+                            new YAxis
                             {
-                                new YAxis
+                                Title = new YAxisTitle
                                 {
-                                    Min = 0,
-                                    Title = new YAxisTitle
-                                    {
-                                        Text = "热度 (次)"
-                                    }
+                                    Text = "热度 (次)"
                                 }
-                            },
-                            Colors = new List<string>()
+                            }
+                        },
+                        Legend = new Legend
+                        {
+                            Enabled = false
+                        },
+                        Tooltip = new Tooltip
+                        {
+                            PointFormat = "今日热度: <b>{point.y} 次</b>"
+                        },
+
+                        PlotOptions = new PlotOptions
+                        {
+                            Series = new PlotOptionsSeries
                             {
-                                "#1abb9c",
-                            },
-                            Legend = new Legend
+                                DataLabels = new PlotOptionsSeriesDataLabels
+                                {
+                                    Enabled = false,
+                                }
+                            }
+                        },
+                        Series = new List<Series>
+                        {
+                            new ColumnSeries
                             {
-                                Enabled = false
-                            },
-                            Tooltip = new Tooltip
-                            {
-                                PointFormat = "今日热度: <b>{point.y} 次</b>"
-                            },
+                                Name = "Goods",
+                                ColorByPoint = true,
+                                Data = @ViewData["HotSale"] as List<ColumnSeriesData>,
+                            }
+                        },
+                        Drilldown = new Drilldown
+                        {
                             Series = new List<Series>
                             {
                                 new ColumnSeries
                                 {
-                                    Name = "HotSale",
-                                    Data = @ViewData["Hotsale"] as List<ColumnSeriesData>
-                                }
+                                    Name =@ViewBag.No1Name,
+                                    Id = @ViewBag.No1Name,
+                                    Data = @ViewData["No1Data"] as List<ColumnSeriesData>
+                                },
+                                new ColumnSeries
+                                {
+                                    Name = @ViewBag.No2Name,
+                                    Id = @ViewBag.No2Name,
+                                    Data = @ViewData["No2Data"] as List<ColumnSeriesData>
+                                },
+                                new ColumnSeries
+                                {
+                                    Name = @ViewBag.No3Name,
+                                    Id = @ViewBag.No3Name,
+                                    Data = @ViewData["No3Data"] as List<ColumnSeriesData>
+                                },
+                                new ColumnSeries
+                                {
+                                    Name = @ViewBag.No4Name,
+                                    Id = @ViewBag.No4Name,
+                                    Data = @ViewData["No4Data"] as List<ColumnSeriesData>
+                                },
+                                new ColumnSeries
+                                {
+                                    Name = @ViewBag.No5Name,
+                                    Id = @ViewBag.No5Name,
+                                    Data = @ViewData["No5Data"] as List<ColumnSeriesData>
+                                },
                             }
                         }
-                        , "chart1")
-                                        )
-                        
-                                    </div>
- 
-                @*</div>*@
-              
+                    }
+                    , "chart2")
+                                )
+
+                </div>
 
             </div>
         </div>
@@ -290,7 +408,7 @@
         <div class="col-md-4 col-sm-4 col-xs-12">
             <div class="x_panel tile fixed_height_320 overflow_hidden">
                 <div class="x_title">
-                    <h2>Device Usage</h2>
+                    <h2>行为分析 <small>Behavior</small></h2>
                     <ul class="nav navbar-right panel_toolbox">
                         <li>
                             <a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
@@ -312,124 +430,106 @@
                     </ul>
                     <div class="clearfix"></div>
                 </div>
-                <div class="x_content">
-                    <table class="" style="width:100%">
-                        <tr>
-                            <th style="width:37%;">
-                                <p>Top 5</p>
-                            </th>
-                            <th>
-                                <div class="col-lg-7 col-md-7 col-sm-7 col-xs-7">
-                                    <p class="">Device</p>
-                                </div>
-                                <div class="col-lg-5 col-md-5 col-sm-5 col-xs-5">
-                                    <p class="">Progress</p>
-                                </div>
-                            </th>
-                        </tr>
-                        <tr>
-                            <td>
-                                <canvas class="canvasDoughnut" height="140" width="140" style="margin: 15px 10px 10px 0"></canvas>
-                            </td>
-                            <td>
-                                <table class="tile_info">
-                                    <tr>
-                                        <td>
-                                            <p><i class="fa fa-square blue"></i>IOS </p>
-                                        </td>
-                                        <td>30%</td>
-                                    </tr>
-                                    <tr>
-                                        <td>
-                                            <p><i class="fa fa-square green"></i>Android </p>
-                                        </td>
-                                        <td>10%</td>
-                                    </tr>
-                                    <tr>
-                                        <td>
-                                            <p><i class="fa fa-square purple"></i>Blackberry </p>
-                                        </td>
-                                        <td>20%</td>
-                                    </tr>
-                                    <tr>
-                                        <td>
-                                            <p><i class="fa fa-square aero"></i>Symbian </p>
-                                        </td>
-                                        <td>15%</td>
-                                    </tr>
-                                    <tr>
-                                        <td>
-                                            <p><i class="fa fa-square red"></i>Others </p>
-                                        </td>
-                                        <td>30%</td>
-                                    </tr>
-                                </table>
-                            </td>
-                        </tr>
-                    </table>
-                </div>
-            </div>
-        </div>
 
+                <div id="chart3" style="min-width:400px; height: 270px;">
+                    @(Html.Highsoft().Highcharts(
+                    new Highcharts
+                    {
+                        Credits = new Credits
+                        {
+                            Enabled = false
+                        },
+                        Chart = new Highsoft.Web.Mvc.Charts.Chart
+                        {
+                            ZoomType = ChartZoomType.Xy
 
-        <div class="col-md-4 col-sm-4 col-xs-12">
-            <div class="x_panel tile fixed_height_320">
-                <div class="x_title">
-                    <h2>Quick Settings</h2>
-                    <ul class="nav navbar-right panel_toolbox">
-                        <li>
-                            <a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
-                        </li>
-                        <li class="dropdown">
-                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><i class="fa fa-wrench"></i></a>
-                            <ul class="dropdown-menu" role="menu">
-                                <li>
-                                    <a href="#">Settings 1</a>
-                                </li>
-                                <li>
-                                    <a href="#">Settings 2</a>
-                                </li>
-                            </ul>
-                        </li>
-                        <li>
-                            <a class="close-link"><i class="fa fa-close"></i></a>
-                        </li>
-                    </ul>
-                    <div class="clearfix"></div>
-                </div>
-                <div class="x_content">
-                    <div class="dashboard-widget-content">
-                        <ul class="quick-list">
-                            <li>
-                                <i class="fa fa-calendar-o"></i><a href="#">Settings</a>
-                            </li>
-                            <li>
-                                <i class="fa fa-bars"></i><a href="#">Subscription</a>
-                            </li>
-                            <li><i class="fa fa-bar-chart"></i><a href="#">Auto Renewal</a> </li>
-                            <li>
-                                <i class="fa fa-line-chart"></i><a href="#">Achievements</a>
-                            </li>
-                            <li><i class="fa fa-bar-chart"></i><a href="#">Auto Renewal</a> </li>
-                            <li>
-                                <i class="fa fa-line-chart"></i><a href="#">Achievements</a>
-                            </li>
-                            <li>
-                                <i class="fa fa-area-chart"></i><a href="#">Logout</a>
-                            </li>
-                        </ul>
+                        },
+                        Title = new Title
+                        {
+                            Text = null
+                        },
 
-                        <div class="sidebar-widget">
-                            <h4>Profile Completion</h4>
-                            <canvas width="150" height="80" id="chart_gauge_01" class="" style="width: 160px; height: 100px;"></canvas>
-                            <div class="goal-wrapper">
-                                <span id="gauge-text" class="gauge-value pull-left">0</span>
-                                <span class="gauge-value pull-left">%</span>
-                                <span id="goal-text" class="goal-value pull-right">100%</span>
-                            </div>
-                        </div>
-                    </div>
+                        XAxis = new List<XAxis>
+                        {
+                            new XAxis
+                            {
+                                Title = new XAxisTitle
+                                {
+                                    Text = "访问（次）"
+                                },
+                                StartOnTick = true,
+                                EndOnTick = true,
+                                ShowLastLabel = true
+                            }
+                        },
+                        YAxis = new List<YAxis>
+                        {
+                            new YAxis
+                            {
+                                Title = new YAxisTitle
+                                {
+                                    Text = ""
+                                }
+                            }
+                        },
+                        Legend = new Legend
+                        {
+                            Layout = LegendLayout.Vertical,
+                            Align = LegendAlign.Left,
+                            VerticalAlign = LegendVerticalAlign.Top,
+                            X = 70,
+                            Y = 10,
+                            Floating = true,
+                            BorderWidth = 1,
+                            BackgroundColor = "white"
+                        },
+
+                        PlotOptions = new PlotOptions
+                        {
+                            Scatter = new PlotOptionsScatter
+                            {
+                                Marker = new PlotOptionsScatterMarker
+                                {
+                                    Radius = 4,
+                                    States = new PlotOptionsScatterMarkerStates
+                                    {
+                                        Hover = new PlotOptionsScatterMarkerStatesHover
+                                        {
+                                            Enabled = true,
+                                            LineColor = "rgb(100,100,100)"
+                                        }
+                                    }
+
+                                },
+                                States = new PlotOptionsScatterStates
+                                {
+                                    Hover = new PlotOptionsScatterStatesHover
+                                    {
+                                    }
+                                },
+                         
+                            }
+                        },
+                        Series = new List<Series>
+                        {
+                            new ScatterSeries
+                            {
+                                Name = "Female",
+                                Color = "rgba(223, 83, 83, .5)",
+                                Data = @ViewData["femaleData"] as List<ScatterSeriesData>
+                            },
+                            new ScatterSeries
+                            {
+                                Name = "Male",
+                                Color = "rgba(119, 152, 191, .5)",
+                                Data = @ViewData["maleData"] as List<ScatterSeriesData>
+                            }
+                        }
+                    }
+                    , "chart3")
+                                )
                 </div>
+
             </div>
         </div>
 
@@ -437,4 +537,42 @@
 </div>
 
 <script src="http://code.highcharts.com/highcharts.js"></script>
+<script src="http://cdn.hcharts.cn/highmaps/modules/map.js"></script> 
 <script src="https://code.highcharts.com/modules/exporting.js"></script>
+<script src="~/Scripts/highcharts/drilldown.js"></script>
+<script src="~/Scripts/highcharts/china.js"></script>
+<script>
+    var data= @Html.Raw(ViewBag.MapData);
+    var map = new Highcharts.Map('chart1', {
+        credits:{
+            enabled: false 
+        },
+        title: {
+            text: null
+        },
+        colorAxis: {
+            min: 0,
+            minColor: 'rgb(255,255,255)',
+            maxColor: '#006cee'
+        },
+
+        legend: {
+            layout: 'vertical',
+            align: 'left',
+            verticalAlign: 'bottom'
+        },
+
+        series: [{
+            data: data,
+            name: '访问量',
+            mapData: Highcharts.maps['cn/china'],
+            joinBy: null // 根据 name 属性进行关联
+
+
+        }]
+    });
+
+
+</script>
+
+
