@@ -12,56 +12,6 @@ namespace FlyingDutchman.Controllers
 
         private MyShopDbContext db = new MyShopDbContext();
 
-        public int CalRate(int today, int yesterday)
-        {
-            return (today - yesterday) * 100 / yesterday;
-        }
-
-        public int OperationQry(IQueryable<Models.User>QryString,string parm)
-        {
-            var qry = from d in QryString
-                      where d.Operation == parm
-                      select d;
-            return  qry.Count();
-        }
-
-        #region 查询热度数据函数
-        public Tuple<string, List<ColumnSeriesData>> GetData(List<ColumnSeriesData> HotSaleData, int n)
-        {
-            string NonName = HotSaleData[n].Name;
-            var NonQry = from no in db.Users
-                         where no.Good == NonName
-                         group no by no.Operation into g
-                         orderby g.Count() descending
-                         select new
-                         {
-                             g.Key,
-                             Num = g.Count()
-                         };
-
-            List<ColumnSeriesData> NonData = new List<ColumnSeriesData>();
-            foreach (var item in NonQry)
-            {
-                NonData.Add(new ColumnSeriesData { Name = item.Key, Y = item.Num });
-            }
-            return Tuple.Create(NonName, NonData);
-
-        }
-
-        #endregion
-
-        private class ChartPoint
-        {
-            public ChartPoint(double? x, double? y)
-            {
-                X = x;
-                Y = y;
-            }
-            public double? X { get; set; }
-            public double? Y { get; set; }
-        }
-
-
         public ActionResult Index()
         {
 
@@ -75,14 +25,14 @@ namespace FlyingDutchman.Controllers
             var TodayQry = from q in db.Users
                            where q.CreatedOn >= today
                            select q;
-            
+
             /* DAU */
             var YesterdayUserQry = from u in YesterdayQry
-                                          select u.Ip;
+                                   select u.Ip;
             int YesterdayDAU = YesterdayUserQry.Distinct().Count();
 
             var TodayUserQry = from u in TodayQry
-                                   select u.Ip;
+                               select u.Ip;
             int TodayDAU = TodayUserQry.Distinct().Count();
 
             /* 付款人数 */
@@ -113,8 +63,8 @@ namespace FlyingDutchman.Controllers
             ViewBag.TotalNum = TodayTotalNum;
 
             try
-            {   
-                ViewBag.DAURate = CalRate(TodayDAU,YesterdayDAU);
+            {
+                ViewBag.DAURate = CalRate(TodayDAU, YesterdayDAU);
                 ViewBag.BuyRate = CalRate(TodayBuyNum, YesterdayBuyNum);
                 ViewBag.AddRate = CalRate(TodayAddNum, YesterdayAddNum);
                 ViewBag.CollectRate = CalRate(TodayCollectNum, YesterdayCollectNum);
@@ -131,6 +81,42 @@ namespace FlyingDutchman.Controllers
                 ViewBag.SearchRate = 100;
                 ViewBag.TotalRate = 100;
             }
+
+            #endregion
+
+            #region  各时间段
+           
+
+
+            List<double> BuyTime = new List<double> { };
+            List<double> AddTime = new List<double> { };
+            List<double> CollectTime = new List<double> { };
+            List<double> SearchTime = new List<double> { };
+
+            for (int i = 0; i < 12; i ++)
+            {
+                BuyTime.Add(OperationQry2(TodayQry,"buy",i));
+                AddTime.Add(OperationQry2(TodayQry, "add", i));
+                CollectTime.Add(OperationQry2(TodayQry, "collect", i));
+                SearchTime.Add(OperationQry2(TodayQry, "search", i));
+            }
+
+            List<LineSeriesData> BuyTimeData = new List<LineSeriesData>();
+            List<LineSeriesData> AddTimeData = new List<LineSeriesData>();
+            List<LineSeriesData> CollectTimeData = new List<LineSeriesData>();
+            List<LineSeriesData> SearchTimeData = new List<LineSeriesData>();
+
+            BuyTime.ForEach(p => BuyTimeData.Add(new LineSeriesData { Y = p }));
+            AddTime.ForEach(p => AddTimeData.Add(new LineSeriesData { Y = p }));
+            CollectTime.ForEach(p => CollectTimeData.Add(new LineSeriesData { Y = p }));
+            SearchTime.ForEach(p => SearchTimeData.Add(new LineSeriesData { Y = p }));
+
+
+            ViewData["BuyTimeData"] = BuyTimeData;
+            ViewData["AddTimeData"] = AddTimeData;
+            ViewData["CollectTimeData"] = CollectTimeData;
+            ViewData["SearchTimeData"] = SearchTimeData;
+
 
             #endregion
 
@@ -202,38 +188,109 @@ namespace FlyingDutchman.Controllers
             #endregion
 
             #region   行为分析
-            List<ChartPoint> femaleValues = new List<ChartPoint>()
+
+
+            List<string> Goods = new List<string> { "女鞋", "香水", "口红", "女帽", "牙刷", "毛巾", "皮带", "男鞋", "烟斗", "男帽", "剃须刀" };
+            List<double?> MaleValues = new List<double?> { };
+            List<double?> FamaleValues = new List<double?> {};
+
+            foreach (var good in Goods)
             {
-                new ChartPoint(169.5, 67.3), new ChartPoint(160.0, 75.5), new ChartPoint(172.7, 68.2), new ChartPoint(162.6, 61.4), new ChartPoint(157.5, 76.8),
-                new ChartPoint(176.5, 71.8), new ChartPoint(164.4, 55.5), new ChartPoint(160.7, 48.6), new ChartPoint(174.0, 66.4), new ChartPoint(163.8, 67.3)
-            };
+                MaleValues.Add(WhoBuyQry(TodayQry,good,true));
+                FamaleValues.Add(WhoBuyQry(TodayQry, good, false));
+            }
 
+            List<AreaSeriesData> MaleData = new List<AreaSeriesData>();
+            List<AreaSeriesData> FamaleData = new List<AreaSeriesData>();
 
-            List<ChartPoint> maleValues = new List<ChartPoint>()
-            {
-                
-            
-                new ChartPoint(174.0, 80.0), new ChartPoint(176.5, 82.3), new ChartPoint(180.3, 73.6), new ChartPoint(167.6, 74.1), new ChartPoint(188.0, 85.9),
-                new ChartPoint(180.3, 73.2), new ChartPoint(167.6, 76.3), new ChartPoint(183.0, 65.9), new ChartPoint(183.0, 90.9), new ChartPoint(179.1, 89.1),
-                new ChartPoint(170.2, 62.3), new ChartPoint(177.8, 82.7), new ChartPoint(179.1, 79.1), new ChartPoint(190.5, 98.2), new ChartPoint(177.8, 84.1),
-                new ChartPoint(180.3, 83.2), new ChartPoint(180.3, 83.2)
-            };
+            MaleValues.ForEach(p => MaleData.Add(new AreaSeriesData { Y = p }));
+            FamaleValues.ForEach(p => FamaleData.Add(new AreaSeriesData { Y = p }));
 
-            List<ScatterSeriesData> femaleData = new List<ScatterSeriesData>();
-            List<ScatterSeriesData> maleData = new List<ScatterSeriesData>();
-
-            femaleValues.ForEach(p => femaleData.Add(new ScatterSeriesData { X = p.X, Y = p.Y }));
-            maleValues.ForEach(p => maleData.Add(new ScatterSeriesData { X = p.X, Y = p.Y }));
-
-            ViewData["femaleData"] = femaleData;
-            ViewData["maleData"] = maleData;
+            ViewData["MaleData"] = MaleData;
+            ViewData["FamaleData"] = FamaleData;
+            #endregion
 
             return View();
         }
 
 
+        public int CalRate(int today, int yesterday)
+        {
+            return (today - yesterday) * 100 / yesterday;
+        }
+
+        public int OperationQry(IQueryable<Models.User> QryString, string parm)
+        {
+            var qry = from d in QryString
+                      where d.Operation == parm
+                      select d;
+            return qry.Count();
+        }
+
+
+        public int WhoBuyQry(IQueryable<Models.User> QryString, string parm, bool sex)
+        {
+            var qry = from d in QryString
+                      where d.Good == parm && d.Sex == sex
+                      select d;
+            return qry.Count();
+        }
+
+        public int OperationQry2(IQueryable<Models.User> QryString, string parm, int n)
+        {
+            DateTime last = DateTime.Now.Date.AddHours(2 * n);
+            DateTime lastAdd2Hour = DateTime.Now.Date.AddHours(2 * (n + 1));
+            var qry = from d in QryString
+                      where d.Operation == parm && d.CreatedOn >= last && d.CreatedOn < lastAdd2Hour
+                      select d;
+            return qry.Count();
+        }
+
+        #region 查询热度数据函数
+        public Tuple<string, List<ColumnSeriesData>> GetData(List<ColumnSeriesData> HotSaleData, int n)
+        {
+            string NonName = "";
+            try
+            {
+                NonName = HotSaleData[n].Name;
+            }
+            catch (Exception)
+            {
+                NonName = "NULL";
+            }
+            var NonQry = from no in db.Users
+                         where no.Good == NonName
+                         group no by no.Operation into g
+                         orderby g.Count() descending
+                         select new
+                         {
+                             g.Key,
+                             Num = g.Count()
+                         };
+
+            List<ColumnSeriesData> NonData = new List<ColumnSeriesData>();
+            foreach (var item in NonQry)
+            {
+                NonData.Add(new ColumnSeriesData { Name = item.Key, Y = item.Num });
+            }
+            return Tuple.Create(NonName, NonData);
+        }
+
         #endregion
 
+        private class ChartPoint
+        {
+            public ChartPoint(double? x, double? y)
+            {
+                X = x;
+                Y = y;
+            }
+            public double? X { get; set; }
+            public double? Y { get; set; }
+        }
 
     }
+    
+
+
 }

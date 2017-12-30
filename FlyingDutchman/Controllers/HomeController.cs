@@ -1,6 +1,4 @@
-﻿using System.Data;
-using System.Data.Entity;
-using System.Linq;
+﻿using System.Linq;
 using System.Net;
 using System.Web.Mvc;
 using FlyingDutchman.Models;
@@ -50,7 +48,7 @@ namespace FlyingDutchman.Controllers
             if (ModelState.IsValid)
             {
                 user.Ip = GetRemoteIP();
-                user.Sex = true;
+                //user.Sex = true;
                 user.Address = GetAddress(user.Ip);
                 db.Users.Add(user);
                 db.SaveChanges();
@@ -71,6 +69,7 @@ namespace FlyingDutchman.Controllers
 
             return SourceIP;
         }
+
         public string GetAddress(string ip)
         {
             string url = "http://int.dpool.sina.com.cn/iplookup/iplookup.php?ip=" + ip;
@@ -82,7 +81,6 @@ namespace FlyingDutchman.Controllers
             return html[4];
 
         }
-
 
     }
 }

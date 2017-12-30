@@ -1,5 +1,4 @@
-﻿@using System.Collections
-@using Highsoft.Web.Mvc.Charts
+﻿@using Highsoft.Web.Mvc.Charts
 
 
 @{
@@ -105,77 +104,31 @@
 
                 <div class="row x_title">
                     <div class="col-md-6">
-                        <h3>实时数据 <small>Network Activities</small></h3>
+                        <h3>当日数据 <small>Activities</small></h3>
                     </div>
                 </div>
 
                 <div class="col-md-12 col-sm-12 col-xs-12">
                     <div id="chart0" class="demo-placeholder">
-                        <script type="text/javascript">
-
-                            function initChart() {
-
-                                var data = generateInitialData();
-
-                                // set up the updating of the chart each second
-                                var series = this.series[0];
-
-                                series.setData(data);
-
-                                setInterval(function () {
-                                    var x = (new Date()).getTime(), // current time
-                                        y = Math.random();
-                                    series.addPoint([x, y], true, true);
-                                }, 1000);
-                            }
-
-                            function formatTooltip() {
-                                return '<b>' + this.series.name + '</b><br/>' +
-                                                Highcharts.dateFormat('%Y-%m-%d %H:%M:%S', this.x) + '<br/>' +
-                                                Highcharts.numberFormat(this.y, 2);
-                            }
-
-                            function generateInitialData() {
-                                var data = [],
-                                    time = (new Date()).getTime(),
-                                    i;
-
-                                for (i = -19; i <= 0; i += 1) {
-                                    data.push({
-                                        x: time + i * 1000,
-                                        y: Math.random()
-                                    });
-                                }
-                                return data;
-                            }
-                        </script>
-
                         @(Html.Highsoft().Highcharts(
                             new Highcharts
                             {
-                                Chart = new Highsoft.Web.Mvc.Charts.Chart
+                                Credits = new Credits
                                 {
-                                    Type = ChartType.Spline,
-                                    Animation = new Animation
-                                    {
-                                        Enabled = true
-                                    },
-                                    MarginRight = 10,
-                                    Events = new ChartEvents
-                                    {
-                                        Load = "initChart"
-                                    }
+                                    Enabled=false,
                                 },
                                 Title = new Title
                                 {
-                                    Text = null
+                                    Text = null,
+
                                 },
                                 XAxis = new List<XAxis>
                                 {
                                     new XAxis
                                     {
-                                        Type = XAxisType.Datetime,
-                                        TickPixelInterval = 150
+                                        Categories = new List<string> { "00:00-02:00", "02:00-04:00", "04:00-06:00","00:60-08:00", "00:80-10:00", "10:00-12:00", "12:00-14:00",
+                                                    "14:00-16:00", "16:00-18:00", "18:00-20:00", "20:00-22:00", "22:00-24:00" },
+
                                     }
                                 },
                                 YAxis = new List<YAxis>
@@ -184,11 +137,11 @@
                                     {
                                         Title = new YAxisTitle
                                         {
-                                            Text = "Value"
+                                            Text = "次数"
                                         },
-                                        PlotLines =  new List<YAxisPlotLines>
+                                        PlotLines = new List<YAxisPlotLines>
                                         {
-                                            new YAxisPlotLines
+                                                new YAxisPlotLines
                                             {
                                                 Value = 0,
                                                 Width = 1,
@@ -199,26 +152,45 @@
                                 },
                                 Tooltip = new Tooltip
                                 {
-                                    Formatter = "formatTooltip"
+                                    ValueSuffix = "次"
                                 },
                                 Legend = new Legend
                                 {
-                                    Enabled = false
-                                },
-                                Exporting = new Exporting
-                                {
-                                    Enabled = false
+                                    Layout = LegendLayout.Horizontal,
+                                    Align = LegendAlign.Right,
+                                    Floating = true,
+                                    VerticalAlign = LegendVerticalAlign.Top,
+                                    BorderWidth = 0,
+                                    X = -90,
+                                    Y = -4,
                                 },
                                 Series = new List<Series>
                                 {
-                                    new SplineSeries
+                                    new LineSeries
                                     {
-                                        Name = "Random Data"
+                                        Name = "购买",
+                                        Data = @ViewData["BuyTimeData"] as List<LineSeriesData>
+                                    },
+                                    new LineSeries
+                                    {
+                                        Name = "添加购物车",
+                                        
+                                        Data = @ViewData["AddTimeData"] as List<LineSeriesData>
+                                    },
+                                    new LineSeries
+                                    {
+                                        Name = "收藏",
+                                        Data = @ViewData["CollectTimeData"] as List<LineSeriesData>
+                                    },
+                                    new LineSeries
+                                    {
+                                        Name = "搜索",
+                                        Data = @ViewData["SearchTimeData"] as List<LineSeriesData>
                                     }
                                 }
                             }
                             , "chart0")
-                        )
+                                            )
 
                     </div>
                 </div>
@@ -432,102 +404,114 @@
                 </div>
 
                 <div id="chart3" style="min-width:400px; height: 270px;">
+                    <script type="text/javascript">
+
+        function formatXAxis() {
+            return this.value; // clean, unformatted number for year
+        }
+
+        function formatYAxis() {
+            return this.value / 1000 + 'k';
+        }
+
+
+                    </script>
+
+
                     @(Html.Highsoft().Highcharts(
-                    new Highcharts
-                    {
-                        Credits = new Credits
+                        new Highcharts
                         {
-                            Enabled = false
-                        },
-                        Chart = new Highsoft.Web.Mvc.Charts.Chart
-                        {
-                            ZoomType = ChartZoomType.Xy
-
-                        },
-                        Title = new Title
-                        {
-                            Text = null
-                        },
-
-                        XAxis = new List<XAxis>
-                        {
-                            new XAxis
+                            Title = new Title
                             {
-                                Title = new XAxisTitle
-                                {
-                                    Text = "访问（次）"
-                                },
-                                StartOnTick = true,
-                                EndOnTick = true,
-                                ShowLastLabel = true
-                            }
-                        },
-                        YAxis = new List<YAxis>
-                        {
-                            new YAxis
-                            {
-                                Title = new YAxisTitle
-                                {
-                                    Text = ""
-                                }
-                            }
-                        },
-                        Legend = new Legend
-                        {
-                            Layout = LegendLayout.Vertical,
-                            Align = LegendAlign.Left,
-                            VerticalAlign = LegendVerticalAlign.Top,
-                            X = 70,
-                            Y = 10,
-                            Floating = true,
-                            BorderWidth = 1,
-                            BackgroundColor = "white"
-                        },
+                                Text =null
+                            },
 
-                        PlotOptions = new PlotOptions
-                        {
-                            Scatter = new PlotOptionsScatter
+                            Credits = new Credits
                             {
-                                Marker = new PlotOptionsScatterMarker
+                                Enabled = false
+                            },
+
+                            Legend = new Legend
+                            {
+                                Align = LegendAlign.Center,
+                                VerticalAlign = LegendVerticalAlign.Top,
+                                Floating = true,  
+                                
+                            },
+
+                            XAxis = new List<XAxis>
+                            {
+                                new XAxis
                                 {
-                                    Radius = 4,
-                                    States = new PlotOptionsScatterMarkerStates
-                                    {
-                                        Hover = new PlotOptionsScatterMarkerStatesHover
+                                     Categories =  new List<string> { "女鞋", "香水", "口红", "女帽", "牙刷", "毛巾", "皮带","男鞋", "烟斗", "男帽","剃须刀" },
+                                     Labels = new XAxisLabels
+                                     {
+                                          Style = new XAxisLabelsStyle()
                                         {
-                                            Enabled = true,
-                                            LineColor = "rgb(100,100,100)"
+                                            FontSize = "8px",
+                                            Color = "#666",
+                                        }
+                                     }
+                                 }
+                            },
+                            YAxis = new List<YAxis>
+                            {
+                                new YAxis
+                                {
+                                    Title = new YAxisTitle
+                                    {
+                                        Text = "操作次数"
+                                    },
+                                    Labels = new YAxisLabels
+                                    {
+                                        Formatter = "formatYAxis"
+                                    }
+                                }
+                            },
+                            Tooltip = new Tooltip
+                            {
+                                PointFormat = "{series.name} 访问 <b>{point.y:,.0f}</b> 次"
+                            },
+                            PlotOptions = new PlotOptions
+                            {
+                                Area = new PlotOptionsArea
+                                {
+
+                                    Marker = new PlotOptionsAreaMarker
+                                    {
+                                        Enabled = false,
+                                        Symbol = "circle",
+                                        Radius = 2,
+                                        States = new PlotOptionsAreaMarkerStates
+                                        {
+                                            Hover = new PlotOptionsAreaMarkerStatesHover
+                                            {
+                                                Enabled = true
+                                            }
                                         }
                                     }
 
-                                },
-                                States = new PlotOptionsScatterStates
-                                {
-                                    Hover = new PlotOptionsScatterStatesHover
-                                    {
-                                    }
-                                },
-                         
-                            }
-                        },
-                        Series = new List<Series>
-                        {
-                            new ScatterSeries
-                            {
-                                Name = "Female",
-                                Color = "rgba(223, 83, 83, .5)",
-                                Data = @ViewData["femaleData"] as List<ScatterSeriesData>
+                                }
                             },
-                            new ScatterSeries
+                            Series = new List<Series>
                             {
-                                Name = "Male",
-                                Color = "rgba(119, 152, 191, .5)",
-                                Data = @ViewData["maleData"] as List<ScatterSeriesData>
+                                new AreaSeries
+                                {
+                                    Color = "rgba(119, 152, 191, .5)",
+                                    Name = "男性",
+                                    Data = @ViewData["MaleData"] as List<AreaSeriesData>
+
+                                },
+                                new AreaSeries
+                                {
+                                    Color = "rgba(223, 83, 83, .3)",
+                                    Name = "女性",
+                                    Data = @ViewData["FamaleData"] as List<AreaSeriesData>
+                                }
                             }
                         }
-                    }
-                    , "chart3")
-                                )
+                        , "chart3")
+                                    )
                 </div>
 
             </div>
@@ -567,7 +551,6 @@
             name: '访问量',
             mapData: Highcharts.maps['cn/china'],
             joinBy: null // 根据 name 属性进行关联
-
 
         }]
     });
