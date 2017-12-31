@@ -12,12 +12,14 @@ namespace FlyingDutchman.Controllers
 
         private MyShopDbContext db = new MyShopDbContext();
 
+
         public ActionResult Index()
         {
 
             #region   总览
-            DateTime yesterday = DateTime.Now.AddDays(-1);
+            DateTime yesterday = DateTime.Now.AddDays(-1).Date;
             DateTime today = DateTime.Now.Date;
+   
             var YesterdayQry = from q in db.Users
                                where q.CreatedOn >= yesterday && q.CreatedOn < today
                                select q;
@@ -25,6 +27,7 @@ namespace FlyingDutchman.Controllers
             var TodayQry = from q in db.Users
                            where q.CreatedOn >= today
                            select q;
+
 
             /* DAU */
             var YesterdayUserQry = from u in YesterdayQry
@@ -70,7 +73,6 @@ namespace FlyingDutchman.Controllers
                 ViewBag.CollectRate = CalRate(TodayCollectNum, YesterdayCollectNum);
                 ViewBag.SearchRate = CalRate(TodaySearchNum, YesterdaySearchNum);
                 ViewBag.TotalRate = CalRate(TodayTotalNum, YesterdayTotalNum);
-
             }
             catch (Exception)
             {
@@ -81,36 +83,34 @@ namespace FlyingDutchman.Controllers
                 ViewBag.SearchRate = 100;
                 ViewBag.TotalRate = 100;
             }
+            
+
 
             #endregion
 
             #region  各时间段
-           
-
-
             List<double> BuyTime = new List<double> { };
             List<double> AddTime = new List<double> { };
             List<double> CollectTime = new List<double> { };
             List<double> SearchTime = new List<double> { };
 
-            for (int i = 0; i < 12; i ++)
+            for (int i = 0; i < 12; i++)
             {
-                BuyTime.Add(OperationQry2(TodayQry,"buy",i));
+                BuyTime.Add(OperationQry2(TodayQry, "buy", i));
                 AddTime.Add(OperationQry2(TodayQry, "add", i));
                 CollectTime.Add(OperationQry2(TodayQry, "collect", i));
                 SearchTime.Add(OperationQry2(TodayQry, "search", i));
             }
 
-            List<LineSeriesData> BuyTimeData = new List<LineSeriesData>();
-            List<LineSeriesData> AddTimeData = new List<LineSeriesData>();
-            List<LineSeriesData> CollectTimeData = new List<LineSeriesData>();
-            List<LineSeriesData> SearchTimeData = new List<LineSeriesData>();
+            List<SplineSeriesData> BuyTimeData = new List<SplineSeriesData>();
+            List<SplineSeriesData> AddTimeData = new List<SplineSeriesData>();
+            List<SplineSeriesData> CollectTimeData = new List<SplineSeriesData>();
+            List<SplineSeriesData> SearchTimeData = new List<SplineSeriesData>();
 
-            BuyTime.ForEach(p => BuyTimeData.Add(new LineSeriesData { Y = p }));
-            AddTime.ForEach(p => AddTimeData.Add(new LineSeriesData { Y = p }));
-            CollectTime.ForEach(p => CollectTimeData.Add(new LineSeriesData { Y = p }));
-            SearchTime.ForEach(p => SearchTimeData.Add(new LineSeriesData { Y = p }));
-
+            BuyTime.ForEach(p => BuyTimeData.Add(new SplineSeriesData { Y = p }));
+            AddTime.ForEach(p => AddTimeData.Add(new SplineSeriesData { Y = p }));
+            CollectTime.ForEach(p => CollectTimeData.Add(new SplineSeriesData { Y = p }));
+            SearchTime.ForEach(p => SearchTimeData.Add(new SplineSeriesData { Y = p }));
 
             ViewData["BuyTimeData"] = BuyTimeData;
             ViewData["AddTimeData"] = AddTimeData;
@@ -122,21 +122,21 @@ namespace FlyingDutchman.Controllers
 
             #region 用户分布
             var AreaQry = from a in TodayQry
-                             group a by a.Address into g
-                             orderby g.Count() descending
-                             select new
-                             {
-                                 name = g.Key,
-                                 value = g.Count()
-                             };
-        
+                          group a by a.Address into g
+                          orderby g.Count() descending
+                          select new
+                          {
+                              name = g.Key,
+                              value = g.Count()
+                          };
+
             string s = "";
             foreach (var item in AreaQry)
             {
-                s = "{\"name\"" +":"+ "\""+item.name + "\"" + ","+ "\"value\"" +":"+ item.value+"},"+s;
+                s = "{\"name\"" + ":" + "\"" + item.name + "\"" + "," + "\"value\"" + ":" + item.value + "}," + s;
             }
-            
-            ViewBag.MapData = "[" +s+"]";
+
+            ViewBag.MapData = "[" + s + "]";
 
 
             #endregion
@@ -192,19 +192,19 @@ namespace FlyingDutchman.Controllers
 
             List<string> Goods = new List<string> { "女鞋", "香水", "口红", "女帽", "牙刷", "毛巾", "皮带", "男鞋", "烟斗", "男帽", "剃须刀" };
             List<double?> MaleValues = new List<double?> { };
-            List<double?> FamaleValues = new List<double?> {};
+            List<double?> FamaleValues = new List<double?> { };
 
             foreach (var good in Goods)
             {
-                MaleValues.Add(WhoBuyQry(TodayQry,good,true));
+                MaleValues.Add(WhoBuyQry(TodayQry, good, true));
                 FamaleValues.Add(WhoBuyQry(TodayQry, good, false));
             }
 
-            List<AreaSeriesData> MaleData = new List<AreaSeriesData>();
-            List<AreaSeriesData> FamaleData = new List<AreaSeriesData>();
+            List<AreasplineSeriesData> MaleData = new List<AreasplineSeriesData>();
+            List<AreasplineSeriesData> FamaleData = new List<AreasplineSeriesData>();
 
-            MaleValues.ForEach(p => MaleData.Add(new AreaSeriesData { Y = p }));
-            FamaleValues.ForEach(p => FamaleData.Add(new AreaSeriesData { Y = p }));
+            MaleValues.ForEach(p => MaleData.Add(new AreasplineSeriesData { Y = p }));
+            FamaleValues.ForEach(p => FamaleData.Add(new AreasplineSeriesData { Y = p }));
 
             ViewData["MaleData"] = MaleData;
             ViewData["FamaleData"] = FamaleData;
@@ -227,7 +227,6 @@ namespace FlyingDutchman.Controllers
             return qry.Count();
         }
 
-
         public int WhoBuyQry(IQueryable<Models.User> QryString, string parm, bool sex)
         {
             var qry = from d in QryString
@@ -246,7 +245,6 @@ namespace FlyingDutchman.Controllers
             return qry.Count();
         }
 
-        #region 查询热度数据函数
         public Tuple<string, List<ColumnSeriesData>> GetData(List<ColumnSeriesData> HotSaleData, int n)
         {
             string NonName = "";
@@ -276,8 +274,6 @@ namespace FlyingDutchman.Controllers
             return Tuple.Create(NonName, NonData);
         }
 
-        #endregion
-
         private class ChartPoint
         {
             public ChartPoint(double? x, double? y)
@@ -290,7 +286,7 @@ namespace FlyingDutchman.Controllers
         }
 
     }
-    
+
 
 
 }

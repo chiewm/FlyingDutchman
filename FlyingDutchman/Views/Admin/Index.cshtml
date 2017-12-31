@@ -111,27 +111,32 @@
                 <div class="col-md-12 col-sm-12 col-xs-12">
                     <div id="chart0" class="demo-placeholder">
                         @(Html.Highsoft().Highcharts(
-                            new Highcharts
+                        new Highcharts
+                        {
+                            Credits = new Credits
                             {
-                                Credits = new Credits
-                                {
-                                    Enabled=false,
-                                },
-                                Title = new Title
-                                {
-                                    Text = null,
+                                Enabled = false,
+                            },
+                            Title = new Title
+                            {
+                                Text = null,
 
-                                },
-                                XAxis = new List<XAxis>
-                                {
+                            },
+
+                            XAxis = new List<XAxis>
+                            {
+
                                     new XAxis
                                     {
                                         Categories = new List<string> { "00:00-02:00", "02:00-04:00", "04:00-06:00","00:60-08:00", "00:80-10:00", "10:00-12:00", "12:00-14:00",
                                                     "14:00-16:00", "16:00-18:00", "18:00-20:00", "20:00-22:00", "22:00-24:00" },
-
+                                        Crosshair=new XAxisCrosshair
+                                        {
+                                             Color="rgba(124, 181, 236, 0.2)",
+                                          },
                                     }
-                                },
-                                YAxis = new List<YAxis>
+                               },
+                            YAxis = new List<YAxis>
                                 {
                                     new YAxis
                                     {
@@ -150,47 +155,48 @@
                                         }
                                     }
                                 },
-                                Tooltip = new Tooltip
+                            Tooltip = new Tooltip
+                            {
+                                ValueSuffix = "次",
+
+                            },
+                            Legend = new Legend
+                            {
+                                Layout = LegendLayout.Horizontal,
+                                Align = LegendAlign.Right,
+                                Floating = true,
+                                VerticalAlign = LegendVerticalAlign.Top,
+                                BorderWidth = 0,
+                                X = -90,
+                                Y = -4,
+                            },
+                            Series = new List<Series>
                                 {
-                                    ValueSuffix = "次"
-                                },
-                                Legend = new Legend
-                                {
-                                    Layout = LegendLayout.Horizontal,
-                                    Align = LegendAlign.Right,
-                                    Floating = true,
-                                    VerticalAlign = LegendVerticalAlign.Top,
-                                    BorderWidth = 0,
-                                    X = -90,
-                                    Y = -4,
-                                },
-                                Series = new List<Series>
-                                {
-                                    new LineSeries
+                                    new SplineSeries
                                     {
                                         Name = "购买",
-                                        Data = @ViewData["BuyTimeData"] as List<LineSeriesData>
+                                        Data = @ViewData["BuyTimeData"] as List<SplineSeriesData>
                                     },
-                                    new LineSeries
+                                    new SplineSeries
                                     {
                                         Name = "添加购物车",
-                                        
-                                        Data = @ViewData["AddTimeData"] as List<LineSeriesData>
+
+                                        Data = @ViewData["AddTimeData"] as List<SplineSeriesData>
                                     },
-                                    new LineSeries
+                                    new SplineSeries
                                     {
                                         Name = "收藏",
-                                        Data = @ViewData["CollectTimeData"] as List<LineSeriesData>
+                                        Data = @ViewData["CollectTimeData"] as List<SplineSeriesData>
                                     },
-                                    new LineSeries
+                                    new SplineSeries
                                     {
                                         Name = "搜索",
-                                        Data = @ViewData["SearchTimeData"] as List<LineSeriesData>
+                                        Data = @ViewData["SearchTimeData"] as List<SplineSeriesData>
                                     }
                                 }
-                            }
+                        }
                             , "chart0")
-                                            )
+                        )
 
                     </div>
                 </div>
@@ -202,7 +208,7 @@
     <br />
 
     <div class="row">
-        
+
         <div class="col-md-4 col-sm-4 col-xs-12">
             <div class="x_panel tile fixed_height_320 overflow_hidden">
                 <div class="x_title">
@@ -231,7 +237,7 @@
 
 
                 <div id="chart1" style="min-width:400px; height: 270px;">
-                  
+
                 </div>
 
             </div>
@@ -269,7 +275,7 @@
                     {
                         Credits = new Credits
                         {
-                            Enabled=false
+                            Enabled = false
                         },
                         Title = new Title
                         {
@@ -370,7 +376,7 @@
                         }
                     }
                     , "chart2")
-                                )
+                    )
 
                 </div>
 
@@ -406,13 +412,13 @@
                 <div id="chart3" style="min-width:400px; height: 270px;">
                     <script type="text/javascript">
 
-        function formatXAxis() {
-            return this.value; // clean, unformatted number for year
-        }
+                        function formatXAxis() {
+                            return this.value; // clean, unformatted number for year
+                        }
 
-        function formatYAxis() {
-            return this.value / 1000 + 'k';
-        }
+                        function formatYAxis() {
+                            return this.value  + '次';
+                        }
 
 
                     </script>
@@ -423,7 +429,7 @@
                         {
                             Title = new Title
                             {
-                                Text =null
+                                Text = null
                             },
 
                             Credits = new Credits
@@ -435,8 +441,8 @@
                             {
                                 Align = LegendAlign.Center,
                                 VerticalAlign = LegendVerticalAlign.Top,
-                                Floating = true,  
-                                
+                                Floating = true,
+
                             },
 
                             XAxis = new List<XAxis>
@@ -474,6 +480,12 @@
                             },
                             PlotOptions = new PlotOptions
                             {
+
+                                Areaspline = new PlotOptionsAreaspline
+                                {
+                                    FillOpacity = 0.5
+                                },
+
                                 Area = new PlotOptionsArea
                                 {
 
@@ -495,23 +507,23 @@
                             },
                             Series = new List<Series>
                             {
-                                new AreaSeries
+                                new AreasplineSeries
                                 {
-                                    Color = "rgba(119, 152, 191, .5)",
+                                    Color = "rgba(124, 181, 236, 0.75)",
                                     Name = "男性",
-                                    Data = @ViewData["MaleData"] as List<AreaSeriesData>
+                                    Data = @ViewData["MaleData"] as List<AreasplineSeriesData>
 
                                 },
-                                new AreaSeries
+                                new AreasplineSeries
                                 {
-                                    Color = "rgba(223, 83, 83, .3)",
+                                    Color = "rgba(223, 83, 83, 0.2)",
                                     Name = "女性",
-                                    Data = @ViewData["FamaleData"] as List<AreaSeriesData>
+                                    Data = @ViewData["FamaleData"] as List<AreasplineSeriesData>
                                 }
                             }
                         }
                         , "chart3")
-                                    )
+                    )
                 </div>
 
             </div>
@@ -521,7 +533,7 @@
 </div>
 
 <script src="http://code.highcharts.com/highcharts.js"></script>
-<script src="http://cdn.hcharts.cn/highmaps/modules/map.js"></script> 
+<script src="http://cdn.hcharts.cn/highmaps/modules/map.js"></script>
 <script src="https://code.highcharts.com/modules/exporting.js"></script>
 <script src="~/Scripts/highcharts/drilldown.js"></script>
 <script src="~/Scripts/highcharts/china.js"></script>
@@ -529,7 +541,7 @@
     var data= @Html.Raw(ViewBag.MapData);
     var map = new Highcharts.Map('chart1', {
         credits:{
-            enabled: false 
+            enabled: false
         },
         title: {
             text: null
@@ -550,12 +562,12 @@
             data: data,
             name: '访问量',
             mapData: Highcharts.maps['cn/china'],
-            joinBy: null // 根据 name 属性进行关联
-
+            joinBy: null, // 根据 name 属性进行关联
+            tooltip: {
+                valueSuffix: ' 次'
+            },
         }]
     });
 
 
 </script>
-
-
