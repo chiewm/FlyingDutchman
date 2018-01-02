@@ -84,8 +84,6 @@ namespace FlyingDutchman.Controllers
                 ViewBag.TotalRate = 100;
             }
             
-
-
             #endregion
 
             #region  各时间段
@@ -158,12 +156,18 @@ namespace FlyingDutchman.Controllers
                 HotSaleData.Add(new ColumnSeriesData { Name = item.Key, Y = item.Num, Drilldown = item.Key });
             }
 
+
             ViewData["HotSale"] = HotSaleData;
 
             //  第一
             var Data1 = GetData(HotSaleData, 0);
             ViewBag.No1Name = Data1.Item1;
+          
             ViewData["No1Data"] = Data1.Item2;
+            foreach (var i in Data1.Item2)
+            {
+                Response.Write(i.Name);
+            }
 
             // 第二
             var Data2 = GetData(HotSaleData, 1);
@@ -189,11 +193,11 @@ namespace FlyingDutchman.Controllers
 
             #region   行为分析
 
-
             List<string> Goods = new List<string> { "女鞋", "香水", "口红", "女帽", "牙刷", "毛巾", "皮带", "男鞋", "烟斗", "男帽", "剃须刀" };
             List<double?> MaleValues = new List<double?> { };
             List<double?> FamaleValues = new List<double?> { };
 
+        
             foreach (var good in Goods)
             {
                 MaleValues.Add(WhoBuyQry(TodayQry, good, true));
@@ -214,11 +218,23 @@ namespace FlyingDutchman.Controllers
         }
 
 
+        /// <summary>
+        /// 计算增长率
+        /// </summary>
+        /// <param name="today"></param>
+        /// <param name="yesterday"></param>
+        /// <returns></returns>
         public int CalRate(int today, int yesterday)
         {
             return (today - yesterday) * 100 / yesterday;
         }
 
+        /// <summary>
+        /// 查询某条件下某种操作的数目
+        /// </summary>
+        /// <param name="QryString"></param>
+        /// <param name="parm"></param>
+        /// <returns></returns>
         public int OperationQry(IQueryable<Models.User> QryString, string parm)
         {
             var qry = from d in QryString
@@ -226,6 +242,7 @@ namespace FlyingDutchman.Controllers
                       select d;
             return qry.Count();
         }
+
 
         public int WhoBuyQry(IQueryable<Models.User> QryString, string parm, bool sex)
         {
@@ -235,6 +252,14 @@ namespace FlyingDutchman.Controllers
             return qry.Count();
         }
 
+        /// <summary>
+        /// 查询某段时间的数目
+        /// </summary>
+        /// <param name="QryString"></param>
+        /// <param name="parm"></param>
+        /// <param name="n"></param>
+        /// <returns></returns>
+        /// 
         public int OperationQry2(IQueryable<Models.User> QryString, string parm, int n)
         {
             DateTime last = DateTime.Now.Date.AddHours(2 * n);
@@ -245,6 +270,12 @@ namespace FlyingDutchman.Controllers
             return qry.Count();
         }
 
+        /// <summary>
+        /// 查询下钻数据
+        /// </summary>
+        /// <param name="HotSaleData"></param>
+        /// <param name="n"></param>
+        /// <returns></returns>
         public Tuple<string, List<ColumnSeriesData>> GetData(List<ColumnSeriesData> HotSaleData, int n)
         {
             string NonName = "";
@@ -254,7 +285,7 @@ namespace FlyingDutchman.Controllers
             }
             catch (Exception)
             {
-                NonName = "NULL";
+                NonName = "Nothing";
             }
             var NonQry = from no in db.Users
                          where no.Good == NonName
@@ -262,7 +293,7 @@ namespace FlyingDutchman.Controllers
                          orderby g.Count() descending
                          select new
                          {
-                             g.Key,
+                             Key = g.Key,
                              Num = g.Count()
                          };
 

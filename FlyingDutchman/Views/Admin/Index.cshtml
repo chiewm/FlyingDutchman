@@ -6,10 +6,8 @@
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
 }
 
-
-<!-- page content -->
 <div class="right_col" role="main" style="height: 970px;">
-    <!-- top tiles -->
+    @*总览*@
     <div class="row tile_count">
         <div class="col-md-2 col-sm-4 col-xs-6 tile_stats_count">
             <span class="count_top"><i class="fa fa-user"></i> 活跃用户数</span>
@@ -96,9 +94,10 @@
 
         </div>
     </div>
-    <!-- /top tiles -->
+    
 
     <div class="row">
+        @* 数据总览图 *@
         <div class="col-md-12 col-sm-12 col-xs-12">
             <div class="dashboard_graph">
 
@@ -120,12 +119,14 @@
                             Title = new Title
                             {
                                 Text = null,
-
+                            },
+                            Colors = new List<string>()
+                            {
+                                "#E74C3C","#9B59B6","#3498DB","#1abb9c"
                             },
 
                             XAxis = new List<XAxis>
                             {
-
                                     new XAxis
                                     {
                                         Categories = new List<string> { "00:00-02:00", "02:00-04:00", "04:00-06:00","00:60-08:00", "00:80-10:00", "10:00-12:00", "12:00-14:00",
@@ -208,7 +209,7 @@
     <br />
 
     <div class="row">
-
+        @*用户分布*@
         <div class="col-md-4 col-sm-4 col-xs-12">
             <div class="x_panel tile fixed_height_320 overflow_hidden">
                 <div class="x_title">
@@ -242,7 +243,7 @@
 
             </div>
         </div>
-
+        @*热门商品*@
         <div class="col-md-4 col-sm-4 col-xs-12">
             <div class="x_panel tile fixed_height_320 overflow_hidden">
                 <div class="x_title">
@@ -382,7 +383,7 @@
 
             </div>
         </div>
-
+        @*行为分析*@
         <div class="col-md-4 col-sm-4 col-xs-12">
             <div class="x_panel tile fixed_height_320 overflow_hidden">
                 <div class="x_title">
@@ -535,10 +536,15 @@
 <script src="http://code.highcharts.com/highcharts.js"></script>
 <script src="http://cdn.hcharts.cn/highmaps/modules/map.js"></script>
 <script src="https://code.highcharts.com/modules/exporting.js"></script>
+@*<script src="https://img.hcharts.cn/highcharts/modules/export-data.js"> </script>*@
 <script src="~/Scripts/highcharts/drilldown.js"></script>
 <script src="~/Scripts/highcharts/china.js"></script>
+
+
 <script>
     var data= @Html.Raw(ViewBag.MapData);
+  
+    // 初始化图表
     var map = new Highcharts.Map('chart1', {
         credits:{
             enabled: false
@@ -562,7 +568,7 @@
             data: data,
             name: '访问量',
             mapData: Highcharts.maps['cn/china'],
-            joinBy: null, // 根据 name 属性进行关联
+            joinBy: 'name', // 根据 name 属性进行关联
             tooltip: {
                 valueSuffix: ' 次'
             },
