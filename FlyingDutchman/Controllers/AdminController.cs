@@ -65,6 +65,9 @@ namespace FlyingDutchman.Controllers
             ViewBag.SearchNum = TodaySearchNum;
             ViewBag.TotalNum = TodayTotalNum;
 
+            double num; 
+            num = double.NegativeInfinity;
+
             try
             {
                 ViewBag.DAURate = CalRate(TodayDAU, YesterdayDAU);
@@ -76,14 +79,14 @@ namespace FlyingDutchman.Controllers
             }
             catch (Exception)
             {
-                ViewBag.DAURate = 100;
-                ViewBag.BuyRate = 100;
-                ViewBag.AddRate = 100;
-                ViewBag.CollectRate = 100;
-                ViewBag.SearchRate = 100;
-                ViewBag.TotalRate = 100;
+                ViewBag.DAURate = num;
+                ViewBag.BuyRate = num;
+                ViewBag.AddRate = num;
+                ViewBag.CollectRate = num;
+                ViewBag.SearchRate = num;
+                ViewBag.TotalRate = num;
             }
-            
+
             #endregion
 
             #region  各时间段
@@ -162,12 +165,7 @@ namespace FlyingDutchman.Controllers
             //  第一
             var Data1 = GetData(HotSaleData, 0);
             ViewBag.No1Name = Data1.Item1;
-          
             ViewData["No1Data"] = Data1.Item2;
-            foreach (var i in Data1.Item2)
-            {
-                Response.Write(i.Name);
-            }
 
             // 第二
             var Data2 = GetData(HotSaleData, 1);
